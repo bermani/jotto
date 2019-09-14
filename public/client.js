@@ -87,6 +87,7 @@ socket.on('error', message => (error.innerHTML = '<h4>' + message + '</h4>'))
 socket.on('success', () => {
   game.style.display = 'inline'
   find.style.display = 'none'
+  info.innerHTML = '<h4>roomname: ' + room + '</h4>'
 })
 
 socket.on('chat', data => {

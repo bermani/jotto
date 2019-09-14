@@ -28,13 +28,12 @@ io.on('connection', socket => {
         players: { [socket.id]: name },
         finished: false
       }
-      io.to(socket.id).emit('success')
     } else {
       socket.join(room)
       rooms[room].playerCount += 1
       rooms[room].players[socket.id] = name
-      io.to(socket.id).emit('success')
     }
+    io.to(socket.id).emit('success')
     const message = {
       message: rooms[room].players[socket.id] + ' connected',
       sentByServer: true
