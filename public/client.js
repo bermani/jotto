@@ -10,7 +10,8 @@ let message = document.getElementById('message'),
   find = document.getElementById('find'),
   join = document.getElementById('join'),
   error = document.getElementById('error'),
-  info = document.getElementById('info')
+  info = document.getElementById('info'),
+  chatWindow = document.getElementById('chat-window')
 
 let name
 let room
@@ -85,18 +86,23 @@ message.addEventListener('keyup', () => {
 socket.on('error', message => (error.innerHTML = '<h4>' + message + '</h4>'))
 
 socket.on('success', () => {
-  game.style.display = 'inline'
+  game.style.display = 'flex'
   find.style.display = 'none'
-  info.innerHTML = '<h4>roomname: ' + room + '</h4>'
+  info.innerHTML = '<strong>roomname: ' + room + '</strong>'
 })
 
 socket.on('chat', data => {
   output.innerHTML = ''
   data.forEach(message => {
     output.innerHTML += message.sentByServer
-      ? '<p style="color: grey"><em>' + message.message + '</em></p>'
-      : '<p><strong>' + message.name + ':</strong> ' + message.message + '</p>'
+      ? '<span style="color: grey"><em>' + message.message + '</em></span><br/>'
+      : '<span><strong>' +
+        message.name +
+        ':</strong> ' +
+        message.message +
+        '</span><br/>'
   })
+  chatWindow.scrollTop = chatWindow.scrollHeight
 })
 
 socket.on('typing', data => {

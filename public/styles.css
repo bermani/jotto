@@ -1,3 +1,49 @@
+html,
 body {
+  margin: 0;
   text-align: center;
+  height: 100%;
+}
+
+#game {
+  height: 90%;
+  align-items: center;
+  flex-grow: 0;
+}
+
+#chatbox {
+  height: 80%;
+  margin: 20px;
+  flex: 0.3;
+}
+
+#chat-window {
+  height: inherit;
+  padding: 5px;
+  text-align: left;
+  word-break: break-all;
+  overflow-y: scroll;
+  margin: 5px;
+}
+
+#jotto {
+  height: inherit;
+  flex: 0.7;
+  display: flex;
+}
+
+#opponent-column {
+  height: inherit;
+  flex: 0.5;
+  margin: 20px;
+  overflow: scroll;
+  border: 1px solid blue;
+}
+
+#player-column {
+  height: inherit;
+  flex: 0.5;
+  margin: 20px;
+  overflow: scroll;
+  border: 1px solid yellow;
 }

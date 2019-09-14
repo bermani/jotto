@@ -18,14 +18,27 @@
       <button id="join">Join</button>
     </div>
     <div id="game" style="display: none">
-      <div id="info"></div>
       <div id="chatbox">
+        <div id="info"></div>
         <div id="chat-window">
           <div id="output"></div>
           <div id="feedback"></div>
         </div>
-        <input type="text" id="message" placeholder="message" /><br />
+        <input type="text" id="message" placeholder="message" />
         <button id="send">Send</button>
+      </div>
+      <div id="jotto">
+        <div id="opponent-column">
+          <span id="opponent-name">Test</span>
+          <div id="opponet-guessed"></div>
+        </div>
+
+        <div id="player-column">
+          <span id="player-name">Test</span><br />
+          <input type="text" id="player-word" />
+          <div id="player-guessed"></div>
+        </div>
+        <div id="cheatsheet"></div>
       </div>
     </div>
     <script src="/client.js"></script>
