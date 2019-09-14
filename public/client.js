@@ -24,6 +24,24 @@ join.addEventListener('click', () => {
   }
 })
 
+namebox.addEventListener('keydown', e => {
+  if (namebox.value && roombox.value && e.key === 'Enter') {
+    error.innerHTML = ''
+    name = namebox.value
+    room = roombox.value
+    socket.emit('join', room)
+  }
+})
+
+roombox.addEventListener('keydown', e => {
+  if (namebox.value && roombox.value && e.key === 'Enter') {
+    error.innerHTML = ''
+    name = namebox.value
+    room = roombox.value
+    socket.emit('join', room)
+  }
+})
+
 send.addEventListener('click', () => {
   if (message.value) {
     socket.emit('submit', {
