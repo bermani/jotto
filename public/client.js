@@ -25,17 +25,35 @@ join.addEventListener('click', () => {
 })
 
 send.addEventListener('click', () => {
-  socket.emit('submit', {
-    message: message.value,
-    name,
-    room
-  })
-  message.value = ''
-  socket.emit('update', {
-    message: message.value,
-    name,
-    room
-  })
+  if (message.value) {
+    socket.emit('submit', {
+      message: message.value,
+      name,
+      room
+    })
+    message.value = ''
+    socket.emit('update', {
+      message: message.value,
+      name,
+      room
+    })
+  }
+})
+
+message.addEventListener('keydown', e => {
+  if (message.value && e.key === 'Enter') {
+    socket.emit('submit', {
+      message: message.value,
+      name,
+      room
+    })
+    message.value = ''
+    socket.emit('update', {
+      message: message.value,
+      name,
+      room
+    })
+  }
 })
 
 message.addEventListener('keyup', () => {
