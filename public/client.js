@@ -20,7 +20,7 @@ join.addEventListener('click', () => {
   name = namebox.value
   room = roombox.value
   if (roombox.value && namebox.value) {
-    socket.emit('join', room)
+    socket.emit('join', room, name)
   }
 })
 
@@ -92,8 +92,9 @@ socket.on('success', () => {
 socket.on('chat', data => {
   output.innerHTML = ''
   data.forEach(message => {
-    output.innerHTML +=
-      '<p><strong>' + message.name + ':</strong> ' + message.message + '</p>'
+    output.innerHTML += message.sentByServer
+      ? '<p style="color: grey"><em>' + message.message + '</em></p>'
+      : '<p><strong>' + message.name + ':</strong> ' + message.message + '</p>'
   })
 })
 
