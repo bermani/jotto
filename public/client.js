@@ -30,7 +30,7 @@ namebox.addEventListener('keydown', e => {
     error.innerHTML = ''
     name = namebox.value
     room = roombox.value
-    socket.emit('join', room)
+    socket.emit('join', room, name)
   }
 })
 
@@ -39,7 +39,7 @@ roombox.addEventListener('keydown', e => {
     error.innerHTML = ''
     name = namebox.value
     room = roombox.value
-    socket.emit('join', room)
+    socket.emit('join', room, name)
   }
 })
 
@@ -83,7 +83,12 @@ message.addEventListener('keyup', () => {
   })
 })
 
-socket.on('error', message => (error.innerHTML = '<h4>' + message + '</h4>'))
+socket.on('error', (message, redirect) => {
+  error.innerHTML = '<h4>' + message + '</h4>'
+  if (redirect) {
+    setTimeout(location.reload, 500)
+  }
+})
 
 socket.on('success', () => {
   game.style.display = 'flex'
