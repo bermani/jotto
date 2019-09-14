@@ -8,18 +8,18 @@ let message = document.getElementById('message'),
   game = document.getElementById('game'),
   roombox = document.getElementById('room'),
   find = document.getElementById('find'),
-  join = document.getElementById('join')
+  join = document.getElementById('join'),
+  error = document.getElementById('error'),
+  info = document.getElementById('info')
 
 let name
 let room
 
 join.addEventListener('click', () => {
+  error.innerHTML = ''
+  name = namebox.value
+  room = roombox.value
   if (roombox.value && namebox.value) {
-    name = namebox.value
-    room = roombox.value
-    game.style.display = 'inline'
-    find.style.display = 'none'
-
     socket.emit('join', room)
   }
 })
@@ -44,6 +44,13 @@ message.addEventListener('keyup', () => {
     name,
     room
   })
+})
+
+socket.on('error', message => (error.innerHTML = '<h4>' + message + '</h4>'))
+
+socket.on('success', () => {
+  game.style.display = 'inline'
+  find.style.display = 'none'
 })
 
 socket.on('chat', data => {

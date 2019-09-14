@@ -11,21 +11,28 @@ app.use(express.static('public'))
 const io = socket(server)
 
 const rooms = {}
-const messages = []
-let typers = new Set()
 
 io.on('connection', socket => {
   console.log('made socket connection', socket.id)
   socket.on('join', room => {
-    socket.join(room)
     if (!rooms[room]) {
+      socket.join(room)
       rooms[room] = {
         messages: [],
-        typers: new Set()
+        typers: new Set(),
+        players: 1
       }
+      io.to(socket.id).emit('success')
+    } else if (rooms[room].players === 2) {
+      io.to(socket.id).emit('error', 'room is full')
+    } else {
+      socket.join(room)
+      rooms[room].players = 2
+      io.to(socket.id).emit('success')
+      io.to(room).emit('chat', rooms[room].messages)
+      io.to(room).emit('typing', [...rooms[room].typers])
     }
-    io.to(room).emit('chat', rooms[room].messages)
-    io.to(room).emit('typing', [...rooms[room].typers])
+    console.log(rooms[room])
   })
 
   socket.on('submit', data => {
