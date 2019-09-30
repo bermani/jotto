@@ -32,20 +32,26 @@ body {
   display: flex;
 }
 
+#play {
+  width: 100%;
+}
+
 #opponent-column {
   height: inherit;
-  flex: 0.5;
+  flex: 0.33;
   margin: 20px;
   overflow: scroll;
-  border: 1px solid blue;
 }
 
 #player-column {
   height: inherit;
-  flex: 0.5;
+  flex: 0.33;
   margin: 20px;
   overflow: scroll;
-  border: 1px solid yellow;
+}
+
+#cheatsheet {
+  flex: 0.33;
 }
 
 #message {
