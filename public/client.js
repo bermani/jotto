@@ -1,6 +1,6 @@
-let socket = io.connect('http://localhost:4000')
+const socket = io.connect('http://localhost:4000', { secure: true })
 
-let message = document.getElementById('message'),
+const message = document.getElementById('message'),
   namebox = document.getElementById('name'),
   output = document.getElementById('output'),
   send = document.getElementById('send'),
@@ -11,10 +11,21 @@ let message = document.getElementById('message'),
   join = document.getElementById('join'),
   error = document.getElementById('error'),
   info = document.getElementById('info'),
-  chatWindow = document.getElementById('chat-window')
+  chatWindow = document.getElementById('chat-window'),
+  secretWord = document.getElementById('secret-word'),
+  setup = document.getElementById('setup'),
+  play = document.getElementById('play'),
+  playerSecret = document.getElementById('player-secret'),
+  opponentSecret = document.getElementById('opponent-secret'),
+  playerName = document.getElementById('player-name'),
+  opponentName = document.getElementById('opponent-name'),
+  playerWord = document.getElementById('player-word'),
+  playerGuessed = document.getElementById('player-guessed'),
+  opponentGuessed = document.getElementById('opponent-guessed')
 
 let name
 let room
+let playerNumber
 
 join.addEventListener('click', () => {
   error.innerHTML = ''
@@ -42,6 +53,23 @@ roombox.addEventListener('keydown', e => {
     socket.emit('join', room, name)
   }
 })
+
+socket.on('error', (message, redirect) => {
+  error.innerHTML = '<h4>' + message + '</h4>'
+  if (redirect) {
+    setTimeout(location.reload, 500)
+  }
+})
+
+socket.on('success', num => {
+  playerName.innerHTML = name
+  info.innerHTML = '<strong>roomname: ' + room + '</strong>'
+  game.style.display = 'flex'
+  find.style.display = 'none'
+  playerNumber = num
+})
+
+// CHAT
 
 send.addEventListener('click', () => {
   if (message.value) {
@@ -83,19 +111,6 @@ message.addEventListener('keyup', () => {
   })
 })
 
-socket.on('error', (message, redirect) => {
-  error.innerHTML = '<h4>' + message + '</h4>'
-  if (redirect) {
-    setTimeout(location.reload, 500)
-  }
-})
-
-socket.on('success', () => {
-  game.style.display = 'flex'
-  find.style.display = 'none'
-  info.innerHTML = '<strong>roomname: ' + room + '</strong>'
-})
-
 socket.on('chat', data => {
   output.innerHTML = ''
   data.forEach(message => {
@@ -114,10 +129,78 @@ socket.on('typing', data => {
   data = data.filter(item => item !== name)
   feedback.innerHTML = ''
   if (data.length === 1) {
-    feedback.innerHTML =
-      '<p><em>' + data[0] + ' is typing a message...</em></p>'
+    feedback.innerHTML = '<em>' + data[0] + ' is typing a message...</em>'
   } else if (data.length > 1) {
-    feedback.innerHTML =
-      '<p><em>multiple people are typing a message...</em></p>'
+    feedback.innerHTML = '<em>multiple people are typing a message...</em>'
+  }
+})
+
+// GAME
+
+secretWord.addEventListener('keydown', e => {
+  if (secretWord.value && e.key === 'Enter') {
+    socket.emit('setSecretWord', {
+      word: secretWord.value,
+      player: playerNumber,
+      room
+    })
+  }
+})
+
+socket.on('wordAccepted', word => {
+  playerSecret.innerHTML = word
+  setup.innerHTML = 'waiting for opponent'
+})
+
+socket.on('gameReady', names => {
+  setup.style.display = 'none'
+  play.style.display = 'flex'
+  opponentName.innerHTML = names[3 - playerNumber]
+})
+
+socket.on('turn', data => {
+  if (data.status === 'finished') {
+    playerWord.style.display = 'none'
+    opponentSecret.innerHTML = data.secretWords[2 - playerNumber]
+  }
+  if (data.status === playerNumber) {
+    playerWord.style.display = 'inline'
+  } else {
+    playerWord.style.display = 'none'
+  }
+  playerGuessed.innerHTML = ''
+  data.playerOneHistory.forEach(guess => {
+    playerGuessed.innerHTML =
+      guess.guess +
+      ': ' +
+      guess.count.toString() +
+      '<br>' +
+      playerGuessed.innerHTML
+  })
+  opponentGuessed.innerHTML = ''
+  data.playerTwoHistory.forEach(guess => {
+    opponentGuessed.innerHTML =
+      guess.guess +
+      ': ' +
+      guess.count.toString() +
+      '<br>' +
+      opponentGuessed.innerHTML
+  })
+  let temp
+  if (playerNumber === 2) {
+    temp = playerGuessed.innerHTML
+    playerGuessed.innerHTML = opponentGuessed.innerHTML
+    opponentGuessed.innerHTML = temp
+  }
+})
+
+playerWord.addEventListener('keydown', e => {
+  if (playerWord.value && e.key === 'Enter') {
+    socket.emit('guessWord', {
+      word: playerWord.value,
+      player: playerNumber,
+      room
+    })
+    playerWord.value = ''
   }
 })
