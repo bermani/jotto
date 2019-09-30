@@ -23,7 +23,28 @@ const message = document.getElementById('message'),
   playerGuessed = document.getElementById('player-guessed'),
   opponentGuessed = document.getElementById('opponent-guessed'),
   newGame = document.getElementById('new-game'),
-  waitingMessage = document.getElementById('waiting-message')
+  waitingMessage = document.getElementById('waiting-message'),
+  reset = document.getElementById('reset')
+
+const BCOLORS = ['#00000000', '#0fbb10', '#bb1010', '#bcbb11']
+const COLORS = ['#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF']
+
+const letters = document.getElementsByClassName('cheat-letter')
+for (const letter of letters) {
+  letter.curr = 0
+  letter.onclick = () => {
+    letter.curr = (letter.curr + 1) % 4
+    letter.style['background-color'] = BCOLORS[letter.curr]
+    letter.style['color'] = COLORS[letter.curr]
+  }
+}
+reset.onclick = () => {
+  for (const letter of letters) {
+    letter.curr = 0
+    letter.style['background-color'] = BCOLORS[letter.curr]
+    letter.style['color'] = COLORS[letter.curr]
+  }
+}
 
 let name
 let room

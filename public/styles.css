@@ -50,10 +50,26 @@ body {
   overflow: scroll;
 }
 
-#cheatsheet {
-  flex: 0.33;
-}
-
 #message {
   width: 80%;
+}
+
+#cheatsheet {
+  flex: 0.33;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.cheat-letter {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  padding-bottom: 5px;
+  margin: 1px;
+  align-content: center;
+  cursor: pointer;
 }
