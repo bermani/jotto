@@ -5,8 +5,8 @@ const fs = require('fs')
 const jotto = require('./jottoGame')
 
 const app = express()
-const server = app.listen(4000, () =>
-  console.log('listening to requests on port 4000')
+const server = app.listen(80, () =>
+  console.log('listening to requests on port 80')
 )
 
 app.use(express.static('public'))
