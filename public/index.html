@@ -15,22 +15,25 @@
       Type in a secret room password and your name<br />
       <input type="text" id="name" placeholder="name" /><br />
       <input type="text" id="room" placeholder="room" /><br />
-      <button id="join">Join</button>
+      <button id="join">join</button>
     </div>
     <div id="game" style="display: none">
       <div id="chatbox">
         <div id="info"></div>
+        <button id="new-game" style="display: none">again</button>
         <div id="chat-window">
           <div id="output"></div>
           <div id="feedback"></div>
         </div>
         <input type="text" id="message" placeholder="message" />
-        <button id="send">Send</button>
+        <button id="send">send</button>
       </div>
       <div id="jotto">
         <div id="setup">
           <input type="text" id="secret-word" placeholder="word" />
+          <span id="waiting-message"></span>
         </div>
+
         <div id="play" style="display: none">
           <div id="opponent-column">
             player: <span id="player-name">error</span><br />

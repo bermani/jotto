@@ -21,7 +21,9 @@ const message = document.getElementById('message'),
   opponentName = document.getElementById('opponent-name'),
   playerWord = document.getElementById('player-word'),
   playerGuessed = document.getElementById('player-guessed'),
-  opponentGuessed = document.getElementById('opponent-guessed')
+  opponentGuessed = document.getElementById('opponent-guessed'),
+  newGame = document.getElementById('new-game'),
+  waitingMessage = document.getElementById('waiting-message')
 
 let name
 let room
@@ -148,8 +150,10 @@ secretWord.addEventListener('keydown', e => {
 })
 
 socket.on('wordAccepted', word => {
+  secretWord.value = ''
+  secretWord.style.display = 'none'
   playerSecret.innerHTML = word
-  setup.innerHTML = 'waiting for opponent'
+  waitingMessage.innerHTML = 'waiting for opponent'
 })
 
 socket.on('gameReady', names => {
@@ -162,6 +166,7 @@ socket.on('turn', data => {
   if (data.status === 'finished') {
     playerWord.style.display = 'none'
     opponentSecret.innerHTML = data.secretWords[2 - playerNumber]
+    newGame.style.display = 'inline-block'
   }
   if (data.status === playerNumber) {
     playerWord.style.display = 'inline'
@@ -203,4 +208,19 @@ playerWord.addEventListener('keydown', e => {
     })
     playerWord.value = ''
   }
+})
+
+newGame.addEventListener('click', () => {
+  socket.emit('newGame', room)
+})
+
+socket.on('newGameReceived', () => {
+  newGame.style.display = 'none'
+  playerGuessed.innerHTML = ''
+  opponentGuessed.innerHTML = ''
+  setup.style.display = 'inline-block'
+  play.style.display = 'none'
+  secretWord.style.display = 'inline-block'
+  waitingMessage.innerHTML = ''
+  opponentSecret.innerHTML = '?????'
 })

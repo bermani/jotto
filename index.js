@@ -155,14 +155,15 @@ io.on('connection', socket => {
 
   socket.on('setSecretWord', data => {
     io.to(socket.id).emit('error', '')
+    const game = rooms[data.room].jottoGame
     if (dictionary[data.word]) {
-      rooms[data.room].jottoGame.setWord(data.word, data.player)
+      game.setWord(data.word, data.player)
       io.to(socket.id).emit('wordAccepted', data.word)
       io.to(socket.id).emit('error', '')
-      if (rooms[data.room].jottoGame.status() !== 'setup') {
+      if (game.status() !== 'setup') {
         io.to(data.room).emit('gameReady', rooms[data.room].playerNumbers)
         io.to(data.room).emit('turn', {
-          status: rooms[data.room].jottoGame.status(),
+          status: game.status(),
           playerOneHistory: [],
           playerTwoHistory: []
         })
@@ -193,5 +194,10 @@ io.on('connection', socket => {
     } else {
       io.to(socket.id).emit('error', 'invalid word')
     }
+  })
+
+  socket.on('newGame', room => {
+    rooms[room].jottoGame = new jotto.JottoGame()
+    io.to(room).emit('newGameReceived')
   })
 })
