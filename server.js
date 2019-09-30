@@ -4,12 +4,12 @@ const fs = require('fs')
 
 const jotto = require('./jottoGame')
 
-const app = express()
-const server = app.listen(80, () =>
-  console.log('listening to requests on port 80')
-)
+const PORT = 80
 
-app.use(express.static('public'))
+const app = express()
+const server = app
+  .use(express.static('public'))
+  .listen(PORT, () => console.log(`Listening on ${PORT}`))
 
 const io = socket(server)
 
