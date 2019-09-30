@@ -1,4 +1,4 @@
-const socket = io.connect('http://localhost:4000', { secure: true })
+const socket = io()
 
 const message = document.getElementById('message'),
   namebox = document.getElementById('name'),
