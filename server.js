@@ -188,9 +188,16 @@ io.on('connection', socket => {
         secretWords:
           game.status() === 'finished'
             ? [game.playerOneWord, game.playerTwoWord]
-            : null
+            : null,
+        winner: game.winner
       })
       io.to(data.room).emit('error', '')
+      if (game.winner) {
+        serverMsg(
+          `${rooms[data.room].playerNumbers[game.winner]} won!`,
+          data.room
+        )
+      }
     } else {
       io.to(socket.id).emit('error', 'invalid word')
     }

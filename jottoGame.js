@@ -6,6 +6,7 @@ class JottoGame {
     this.playerTwoHistory = []
     this.playerOneTurn = true
     this.gameFinished = false
+    this.winner = null
   }
 
   status() {
@@ -29,6 +30,7 @@ class JottoGame {
   playerOneGuessWord(word) {
     if (word === this.playerTwoWord) {
       this.gameFinished = true
+      this.winner = 1
     }
     let count = 0
     for (const char of word) {
@@ -43,6 +45,7 @@ class JottoGame {
   playerTwoGuessWord(word) {
     if (word === this.playerOneWord) {
       this.gameFinished = true
+      this.winner = 2
     }
     let count = 0
     for (const char of word) {
