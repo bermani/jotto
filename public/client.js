@@ -1,3 +1,4 @@
+'use strict'
 const socket = io()
 
 const message = document.getElementById('message'),
@@ -24,18 +25,28 @@ const message = document.getElementById('message'),
   opponentGuessed = document.getElementById('opponent-guessed'),
   newGame = document.getElementById('new-game'),
   waitingMessage = document.getElementById('waiting-message'),
-  reset = document.getElementById('reset')
+  reset = document.getElementById('reset'),
+  submitSecretWord = document.getElementById('submit-secret-word'),
+  submitPlayerWord = document.getElementById('submit-player-word')
 
 const BCOLORS = ['#00000000', '#0fbb10', '#bb1010', '#bcbb11']
 const COLORS = ['#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF']
 
 const letters = document.getElementsByClassName('cheat-letter')
 for (const letter of letters) {
-  letter.curr = 0
+  if (!(letter.innerHTML in window.sessionStorage)) {
+    window.sessionStorage.setItem(letter.innerHTML, 0)
+  } else {
+    const color = window.sessionStorage.getItem(letter.innerHTML)
+    letter.style['background-color'] = BCOLORS[color]
+    letter.style['color'] = COLORS[color]
+  }
   letter.onclick = () => {
-    letter.curr = (letter.curr + 1) % 4
-    letter.style['background-color'] = BCOLORS[letter.curr]
-    letter.style['color'] = COLORS[letter.curr]
+    const item = parseInt(window.sessionStorage.getItem(letter.innerHTML))
+    const newColor = (item + 1) % 4
+    letter.style['background-color'] = BCOLORS[newColor]
+    letter.style['color'] = COLORS[newColor]
+    window.sessionStorage.setItem(letter.innerHTML, newColor)
   }
 }
 reset.onclick = () => {
@@ -170,9 +181,20 @@ secretWord.addEventListener('keydown', e => {
   }
 })
 
+submitSecretWord.addEventListener('click', () => {
+  if (secretWord.value) {
+    socket.emit('setSecretWord', {
+      word: secretWord.value,
+      player: playerNumber,
+      room
+    })
+  }
+})
+
 socket.on('wordAccepted', word => {
   secretWord.value = ''
   secretWord.style.display = 'none'
+  submitSecretWord.style.display = 'none'
   playerSecret.innerHTML = word
   waitingMessage.innerHTML = 'waiting for opponent'
 })
@@ -186,13 +208,16 @@ socket.on('gameReady', names => {
 socket.on('turn', data => {
   if (data.status === 'finished') {
     playerWord.style.display = 'none'
+    submitPlayerWord.style.display = 'none'
     opponentSecret.innerHTML = data.secretWords[2 - playerNumber]
     newGame.style.display = 'inline-block'
   }
   if (data.status === playerNumber) {
     playerWord.style.display = 'inline'
+    submitPlayerWord.style.display = 'inline'
   } else {
     playerWord.style.display = 'none'
+    submitPlayerWord.style.display = 'none'
   }
   playerGuessed.innerHTML = ''
   data.playerOneHistory.forEach(guess => {
@@ -222,6 +247,17 @@ socket.on('turn', data => {
 
 playerWord.addEventListener('keydown', e => {
   if (playerWord.value && e.key === 'Enter') {
+    socket.emit('guessWord', {
+      word: playerWord.value,
+      player: playerNumber,
+      room
+    })
+    playerWord.value = ''
+  }
+})
+
+submitPlayerWord.addEventListener('click', () => {
+  if (playerWord.value) {
     socket.emit('guessWord', {
       word: playerWord.value,
       player: playerNumber,
