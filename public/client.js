@@ -34,26 +34,31 @@ const COLORS = ['#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF']
 
 const letters = document.getElementsByClassName('cheat-letter')
 for (const letter of letters) {
-  if (!(letter.innerHTML in window.sessionStorage)) {
-    window.sessionStorage.setItem(letter.innerHTML, 0)
+  if (!(letter.innerHTML in window.localStorage)) {
+    window.localStorage.setItem(letter.innerHTML, 0)
   } else {
-    const color = window.sessionStorage.getItem(letter.innerHTML)
+    const color = window.localStorage.getItem(letter.innerHTML)
     letter.style['background-color'] = BCOLORS[color]
     letter.style['color'] = COLORS[color]
   }
   letter.onclick = () => {
-    const item = parseInt(window.sessionStorage.getItem(letter.innerHTML))
+    const item = parseInt(window.localStorage.getItem(letter.innerHTML))
     const newColor = (item + 1) % 4
     letter.style['background-color'] = BCOLORS[newColor]
     letter.style['color'] = COLORS[newColor]
-    window.sessionStorage.setItem(letter.innerHTML, newColor)
+    window.localStorage.setItem(letter.innerHTML, newColor)
   }
 }
+window.addEventListener('storage', e => {
+  const letter = document.getElementById(e.key)
+  letter.style['background-color'] = BCOLORS[parseInt(e.newValue)]
+  letter.style['color'] = COLORS[parseInt(e.newValue)]
+})
 reset.onclick = () => {
   for (const letter of letters) {
-    letter.curr = 0
-    letter.style['background-color'] = BCOLORS[letter.curr]
-    letter.style['color'] = COLORS[letter.curr]
+    window.localStorage.setItem(letter.innerHTML, 0)
+    letter.style['background-color'] = BCOLORS[0]
+    letter.style['color'] = COLORS[0]
   }
 }
 
@@ -280,4 +285,5 @@ socket.on('newGameReceived', () => {
   secretWord.style.display = 'inline-block'
   waitingMessage.innerHTML = ''
   opponentSecret.innerHTML = '?????'
+  reset.onclick()
 })
