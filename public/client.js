@@ -32,6 +32,25 @@ const message = document.getElementById('message'),
 const BCOLORS = ['#00000000', '#0fbb10', '#bb1010', '#bcbb11']
 const COLORS = ['#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF']
 
+let notificationsEnabled = false
+
+if ('Notification' in window) {
+  if (Notification.permission === 'granted') {
+    notificationsEnabled = true
+  } else if (Notification.permission === 'denied') {
+    notificationsEnabled = false
+  } else {
+    Notification.requestPermission(function(permission) {
+      if (permission === 'granted') {
+        notificationsEnabled = true
+        const notification = new Notification('notifications enabled!')
+      } else {
+        notificationsEnabled = false
+      }
+    })
+  }
+}
+
 const letters = document.getElementsByClassName('cheat-letter')
 for (const letter of letters) {
   if (!(letter.innerHTML in window.localStorage)) {
@@ -161,6 +180,17 @@ socket.on('chat', data => {
         message.message +
         '</span><br/>'
   })
+  const last = data[data.length - 1]
+  if (last.sentByServer && notificationsEnabled && !document.hasFocus()) {
+    const notification = new Notification('jotto room: ' + room, {
+      body: last.message,
+      icon: 'favicon.png'
+    })
+    notification.onclick = () => {
+      window.focus()
+      notification.close()
+    }
+  }
   chatWindow.scrollTop = chatWindow.scrollHeight
 })
 
@@ -220,6 +250,16 @@ socket.on('turn', data => {
   if (data.status === playerNumber) {
     playerWord.style.display = 'inline'
     submitPlayerWord.style.display = 'inline'
+    if (notificationsEnabled && !document.hasFocus()) {
+      const notification = new Notification('jotto room: ' + room, {
+        body: "it's your turn for jotto",
+        icon: 'favicon.png'
+      })
+      notification.onclick = () => {
+        window.focus()
+        notification.close()
+      }
+    }
   } else {
     playerWord.style.display = 'none'
     submitPlayerWord.style.display = 'none'
