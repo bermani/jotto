@@ -1,15 +1,24 @@
 const express = require('express')
 const socket = require('socket.io')
+const https = require('https')
 const fs = require('fs')
 
 const jotto = require('./jottoGame')
 
-const PORT = 80
+const PORT = 443
 
 const app = express()
-const server = app
-  .use(express.static('public'))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`))
+const server = https
+  .createServer(
+    {
+      key: fs.readFileSync('server.key'),
+      cert: fs.readFileSync('server.cert')
+    },
+    app.use(express.static('public'))
+  )
+  .listen(PORT, function() {
+    console.log('listening')
+  })
 
 const io = socket(server)
 
