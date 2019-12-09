@@ -33,6 +33,7 @@ const BCOLORS = ['#00000000', '#0fbb10', '#bb1010', '#bcbb11']
 const COLORS = ['#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF']
 
 let notificationsEnabled = false
+let notification
 
 if ('Notification' in window) {
   if (Notification.permission === 'granted') {
@@ -43,7 +44,7 @@ if ('Notification' in window) {
     Notification.requestPermission(function(permission) {
       if (permission === 'granted') {
         notificationsEnabled = true
-        const notification = new Notification('notifications enabled!')
+        notification = new Notification('notifications enabled!')
       } else {
         notificationsEnabled = false
       }
@@ -182,7 +183,7 @@ socket.on('chat', data => {
   })
   const last = data[data.length - 1]
   if (last.sentByServer && notificationsEnabled && !document.hasFocus()) {
-    const notification = new Notification('jotto room: ' + room, {
+    notification = new Notification('jotto room: ' + room, {
       body: last.message,
       icon: 'favicon.png'
     })
@@ -209,7 +210,7 @@ socket.on('typing', data => {
 secretWord.addEventListener('keydown', e => {
   if (secretWord.value && e.key === 'Enter') {
     socket.emit('setSecretWord', {
-      word: secretWord.value,
+      word: secretWord.value.toLowerCase(),
       player: playerNumber,
       room
     })
@@ -219,7 +220,7 @@ secretWord.addEventListener('keydown', e => {
 submitSecretWord.addEventListener('click', () => {
   if (secretWord.value) {
     socket.emit('setSecretWord', {
-      word: secretWord.value,
+      word: secretWord.value.toLowerCase(),
       player: playerNumber,
       room
     })
@@ -251,7 +252,7 @@ socket.on('turn', data => {
     playerWord.style.display = 'inline'
     submitPlayerWord.style.display = 'inline'
     if (notificationsEnabled && !document.hasFocus()) {
-      const notification = new Notification('jotto room: ' + room, {
+      notification = new Notification('jotto room: ' + room, {
         body: "it's your turn for jotto",
         icon: 'favicon.png'
       })
@@ -293,7 +294,7 @@ socket.on('turn', data => {
 playerWord.addEventListener('keydown', e => {
   if (playerWord.value && e.key === 'Enter') {
     socket.emit('guessWord', {
-      word: playerWord.value,
+      word: playerWord.value.toLowerCase(),
       player: playerNumber,
       room
     })
@@ -304,7 +305,7 @@ playerWord.addEventListener('keydown', e => {
 submitPlayerWord.addEventListener('click', () => {
   if (playerWord.value) {
     socket.emit('guessWord', {
-      word: playerWord.value,
+      word: playerWord.value.toLowerCase(),
       player: playerNumber,
       room
     })
